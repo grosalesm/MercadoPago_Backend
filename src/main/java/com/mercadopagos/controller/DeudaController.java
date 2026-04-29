@@ -23,19 +23,16 @@ public class DeudaController {
         this.deudaService = deudaService;
     }
 
-    // Registrar una deuda individual (puede ser retroactiva: fechaEmision <= hoy)
     @PostMapping
     public ResponseEntity<DeudaResponseDTO> crearDeuda(@Valid @RequestBody DeudaRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(deudaService.crearDeuda(dto));
     }
 
-    // Registrar 2, 3 o n deudas en una sola solicitud
     @PostMapping("/multiple")
     public ResponseEntity<List<DeudaResponseDTO>> crearDeudasMultiple(@Valid @RequestBody DeudaMultipleRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(deudaService.crearDeudasMultiple(dto));
     }
 
-    // Listas por estado
     @GetMapping("/pendientes")
     public ResponseEntity<List<DeudaResponseDTO>> listarPendientes() {
         return ResponseEntity.ok(deudaService.listarPendientes());
@@ -51,25 +48,21 @@ public class DeudaController {
         return ResponseEntity.ok(deudaService.listarVencidas());
     }
 
-    // Deudas históricas de un puesto (incluye deudas de socios anteriores)
     @GetMapping("/puesto/{puestoId}")
     public ResponseEntity<List<DeudaResponseDTO>> listarPorPuesto(@PathVariable Long puestoId) {
         return ResponseEntity.ok(deudaService.listarPorPuesto(puestoId));
     }
 
-    // Deudas activas de socios que ya no tienen puesto asignado
     @GetMapping("/sin-puesto")
     public ResponseEntity<List<DeudaResponseDTO>> listarSinPuesto() {
         return ResponseEntity.ok(deudaService.listarSinPuesto());
     }
 
-    // Reporte de morosidad: puestos con deudas vencidas sin pagar
     @GetMapping("/morosidad")
     public ResponseEntity<List<MorosidadDTO>> reporteMorosidad() {
         return ResponseEntity.ok(deudaService.reporteMorosidad());
     }
 
-    // Tarjetas informativas de cobranzas
     @GetMapping("/resumen-cobranzas")
     public ResponseEntity<ResumenCobranzaDTO> obtenerResumenCobranzas() {
         return ResponseEntity.ok(deudaService.obtenerResumenCobranzas());

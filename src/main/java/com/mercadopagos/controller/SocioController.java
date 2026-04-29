@@ -61,7 +61,6 @@ public class SocioController {
         return ResponseEntity.ok(socioService.desbloquear(id));
     }
 
-    // Lista los puestos que actualmente ocupa o ha ocupado el socio
     @GetMapping("/{id}/puestos")
     public ResponseEntity<List<PuestoResponseDTO>> listarPuestosDeSocio(@PathVariable Long id) {
         return ResponseEntity.ok(socioService.listarPuestosDeSocio(id));

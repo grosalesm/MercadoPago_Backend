@@ -21,13 +21,11 @@ public class PagoController {
         this.pagoService = pagoService;
     }
 
-    // Pagar una deuda específica (pago completo)
     @PostMapping("/individual")
     public ResponseEntity<PagoResponseDTO> pagarDeudaIndividual(@Valid @RequestBody PagoRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagoService.pagarDeudaIndividual(dto));
     }
 
-    // Pagar la totalidad de deudas pendientes de un puesto (boleta completa)
     @PostMapping("/puesto/{puestoId}/total")
     public ResponseEntity<List<PagoResponseDTO>> pagarTotalPuesto(@PathVariable Long puestoId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagoService.pagarTotalPuesto(puestoId));

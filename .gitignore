@@ -30,7 +30,3 @@ Thumbs.db
 # Environment
 .env
 application-local.properties
-
-# Claude Code
-CLAUDE.md
-.claude/

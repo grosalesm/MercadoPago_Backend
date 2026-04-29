@@ -53,6 +53,17 @@ public class PuestoController {
         return ResponseEntity.ok(puestoService.habilitar(id));
     }
 
+    @PostMapping("/{id}/asignar-socio")
+    public ResponseEntity<PuestoResponseDTO> asignarSocio(@PathVariable Long id,
+                                                          @Valid @RequestBody AsignarSocioRequestDTO dto) {
+        return ResponseEntity.ok(puestoService.asignarSocio(id, dto));
+    }
+
+    @PostMapping("/{id}/liberar")
+    public ResponseEntity<PuestoResponseDTO> liberarPuesto(@PathVariable Long id) {
+        return ResponseEntity.ok(puestoService.liberarPuesto(id));
+    }
+
     // Tarjetas informativas
     @GetMapping("/estadisticas")
     public ResponseEntity<PuestoEstadisticasDTO> obtenerEstadisticas() {
@@ -74,16 +85,5 @@ public class PuestoController {
         return ResponseEntity.ok(puestoService.listarInhabilitados());
     }
 
-    // Asignar un socio a un puesto libre
-    @PostMapping("/{id}/asignar-socio")
-    public ResponseEntity<PuestoResponseDTO> asignarSocio(@PathVariable Long id,
-                                                           @Valid @RequestBody AsignarSocioRequestDTO dto) {
-        return ResponseEntity.ok(puestoService.asignarSocio(id, dto));
-    }
 
-    // Liberar un puesto (queda libre, deuda histórica se preserva)
-    @PostMapping("/{id}/liberar")
-    public ResponseEntity<PuestoResponseDTO> liberarPuesto(@PathVariable Long id) {
-        return ResponseEntity.ok(puestoService.liberarPuesto(id));
-    }
 }
