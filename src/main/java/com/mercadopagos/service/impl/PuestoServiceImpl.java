@@ -57,6 +57,7 @@ public class PuestoServiceImpl implements PuestoService {
         Puesto puesto = new Puesto();
         puesto.setCodigo(dto.getCodigo());
         puesto.setDescripcion(dto.getDescripcion());
+        puesto.setTipo(dto.getTipo());
 
         puesto = puestoRepository.save(puesto);
         return puestoMapper.toDTO(puesto);
@@ -73,21 +74,42 @@ public class PuestoServiceImpl implements PuestoService {
 
         puesto.setCodigo(dto.getCodigo());
         puesto.setDescripcion(dto.getDescripcion());
+        puesto.setTipo(dto.getTipo());
 
         puesto = puestoRepository.save(puesto);
         return puestoMapper.toDTO(puesto);
     }
 
     @Override
-    public void eliminar(Long id) {
+    public PuestoResponseDTO inhabilitar(Long id) {
         Puesto puesto = puestoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Puesto no encontrado con ID: " + id));
 
         if (puesto.getEstado() == EstadoPuesto.OCUPADO) {
-            throw new IllegalStateException("No se puede eliminar un puesto que está ocupado.");
+            throw new IllegalStateException("No se puede inhabilitar un puesto ocupado. Primero libere el puesto.");
         }
 
-        puestoRepository.delete(puesto);
+        if (puesto.getEstado() == EstadoPuesto.INHABILITADO) {
+            throw new IllegalStateException("El puesto ya se encuentra inhabilitado.");
+        }
+
+        puesto.setEstado(EstadoPuesto.INHABILITADO);
+        puesto = puestoRepository.save(puesto);
+        return puestoMapper.toDTO(puesto);
+    }
+
+    @Override
+    public PuestoResponseDTO habilitar(Long id) {
+        Puesto puesto = puestoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Puesto no encontrado con ID: " + id));
+
+        if (puesto.getEstado() != EstadoPuesto.INHABILITADO) {
+            throw new IllegalStateException("El puesto no se encuentra inhabilitado.");
+        }
+
+        puesto.setEstado(EstadoPuesto.LIBRE);
+        puesto = puestoRepository.save(puesto);
+        return puestoMapper.toDTO(puesto);
     }
 
     @Override
@@ -106,15 +128,23 @@ public class PuestoServiceImpl implements PuestoService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<PuestoResponseDTO> listarInhabilitados() {
+        List<Puesto> puestos = puestoRepository.findByEstado(EstadoPuesto.INHABILITADO);
+        return puestoMapper.toDTOList(puestos);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public PuestoEstadisticasDTO obtenerEstadisticas() {
-        long total = puestoRepository.count();
         long ocupados = puestoRepository.countByEstado(EstadoPuesto.OCUPADO);
         long libres = puestoRepository.countByEstado(EstadoPuesto.LIBRE);
+        long inhabilitados = puestoRepository.countByEstado(EstadoPuesto.INHABILITADO);
 
         PuestoEstadisticasDTO dto = new PuestoEstadisticasDTO();
-        dto.setTotal(total);
+        dto.setTotal(ocupados + libres + inhabilitados);
         dto.setOcupados(ocupados);
         dto.setLibres(libres);
+        dto.setInhabilitados(inhabilitados);
         return dto;
     }
 
@@ -127,8 +157,16 @@ public class PuestoServiceImpl implements PuestoService {
             throw new IllegalStateException("El puesto ya está ocupado. Debe liberarlo antes de asignar otro socio.");
         }
 
+        if (puesto.getEstado() == EstadoPuesto.INHABILITADO) {
+            throw new IllegalStateException("No se puede asignar un socio a un puesto inhabilitado.");
+        }
+
         Socio socio = socioRepository.findById(dto.getSocioId())
                 .orElseThrow(() -> new ResourceNotFoundException("Socio no encontrado con ID: " + dto.getSocioId()));
+
+        if (!socio.getActivo()) {
+            throw new IllegalStateException("No se puede asignar un puesto a un socio bloqueado.");
+        }
 
         puesto.setSocio(socio);
         puesto.setEstado(EstadoPuesto.OCUPADO);

@@ -16,6 +16,7 @@ public class PuestoMapper {
         dto.setCodigo(puesto.getCodigo());
         dto.setDescripcion(puesto.getDescripcion());
         dto.setEstado(puesto.getEstado());
+        dto.setTipo(puesto.getTipo());
 
         if (puesto.getSocio() != null) {
             dto.setSocioId(puesto.getSocio().getId());

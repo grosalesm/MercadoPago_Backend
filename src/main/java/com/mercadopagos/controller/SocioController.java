@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/socios")
@@ -46,6 +47,18 @@ public class SocioController {
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         socioService.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/bloquear")
+    public ResponseEntity<SocioResponseDTO> bloquear(@PathVariable Long id,
+                                                      @RequestBody(required = false) Map<String, String> body) {
+        String observacion = (body != null) ? body.get("observacion") : null;
+        return ResponseEntity.ok(socioService.bloquear(id, observacion));
+    }
+
+    @PatchMapping("/{id}/desbloquear")
+    public ResponseEntity<SocioResponseDTO> desbloquear(@PathVariable Long id) {
+        return ResponseEntity.ok(socioService.desbloquear(id));
     }
 
     // Lista los puestos que actualmente ocupa o ha ocupado el socio

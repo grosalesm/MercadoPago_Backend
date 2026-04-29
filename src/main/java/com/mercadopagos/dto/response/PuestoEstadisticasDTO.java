@@ -10,4 +10,5 @@ public class PuestoEstadisticasDTO {
     private long total;
     private long ocupados;
     private long libres;
+    private long inhabilitados;
 }

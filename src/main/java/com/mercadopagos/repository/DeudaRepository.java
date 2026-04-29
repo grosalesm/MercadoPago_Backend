@@ -31,4 +31,10 @@ public interface DeudaRepository extends JpaRepository<Deuda, Long> {
            "WHERE d.estado IN :estados " +
            "AND d.socio NOT IN (SELECT p.socio FROM Puesto p WHERE p.socio IS NOT NULL)")
     List<Socio> findDeudoresSinPuesto(@Param("estados") List<EstadoDeuda> estados);
+
+    // Deudas activas de socios que ya no están asignados a ningún puesto
+    @Query("SELECT d FROM Deuda d " +
+           "WHERE d.estado IN :estados " +
+           "AND d.socio NOT IN (SELECT p.socio FROM Puesto p WHERE p.socio IS NOT NULL)")
+    List<Deuda> findDeudasSinPuesto(@Param("estados") List<EstadoDeuda> estados);
 }

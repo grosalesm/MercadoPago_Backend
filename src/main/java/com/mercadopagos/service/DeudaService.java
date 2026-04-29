@@ -22,6 +22,8 @@ public interface DeudaService {
 
     List<DeudaResponseDTO> listarPorPuesto(Long puestoId);
 
+    List<DeudaResponseDTO> listarSinPuesto();
+
     List<MorosidadDTO> reporteMorosidad();
 
     ResumenCobranzaDTO obtenerResumenCobranzas();

@@ -17,11 +17,15 @@ public interface PuestoService {
 
     PuestoResponseDTO actualizar(Long id, PuestoRequestDTO dto);
 
-    void eliminar(Long id);
+    PuestoResponseDTO inhabilitar(Long id);
+
+    PuestoResponseDTO habilitar(Long id);
 
     List<PuestoResponseDTO> listarOcupados();
 
     List<PuestoResponseDTO> listarLibres();
+
+    List<PuestoResponseDTO> listarInhabilitados();
 
     PuestoEstadisticasDTO obtenerEstadisticas();
 

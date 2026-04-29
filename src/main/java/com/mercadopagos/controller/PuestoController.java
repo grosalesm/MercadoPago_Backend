@@ -43,10 +43,14 @@ public class PuestoController {
         return ResponseEntity.ok(puestoService.actualizar(id, dto));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        puestoService.eliminar(id);
-        return ResponseEntity.noContent().build();
+    @PatchMapping("/{id}/inhabilitar")
+    public ResponseEntity<PuestoResponseDTO> inhabilitar(@PathVariable Long id) {
+        return ResponseEntity.ok(puestoService.inhabilitar(id));
+    }
+
+    @PatchMapping("/{id}/habilitar")
+    public ResponseEntity<PuestoResponseDTO> habilitar(@PathVariable Long id) {
+        return ResponseEntity.ok(puestoService.habilitar(id));
     }
 
     // Tarjetas informativas
@@ -63,6 +67,11 @@ public class PuestoController {
     @GetMapping("/libres")
     public ResponseEntity<List<PuestoResponseDTO>> listarLibres() {
         return ResponseEntity.ok(puestoService.listarLibres());
+    }
+
+    @GetMapping("/inhabilitados")
+    public ResponseEntity<List<PuestoResponseDTO>> listarInhabilitados() {
+        return ResponseEntity.ok(puestoService.listarInhabilitados());
     }
 
     // Asignar un socio a un puesto libre

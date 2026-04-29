@@ -1,5 +1,6 @@
 package com.mercadopagos.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -30,6 +31,23 @@ public class GlobalExceptionHandler {
         error.put("status", HttpStatus.CONFLICT.value());
         error.put("error", "Operación no permitida");
         error.put("mensaje", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDataIntegrity(DataIntegrityViolationException ex) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("timestamp", LocalDateTime.now().toString());
+        error.put("status", HttpStatus.CONFLICT.value());
+        error.put("error", "Dato duplicado");
+        String rootMsg = ex.getRootCause() != null ? ex.getRootCause().getMessage() : "";
+        if (rootMsg.toLowerCase().contains("email")) {
+            error.put("mensaje", "Ya existe un socio con el email ingresado");
+        } else if (rootMsg.toLowerCase().contains("dni")) {
+            error.put("mensaje", "Ya existe un socio con el DNI ingresado");
+        } else {
+            error.put("mensaje", "Ya existe un registro con ese valor. Verifique los datos.");
+        }
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 

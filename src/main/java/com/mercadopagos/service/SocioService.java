@@ -18,5 +18,9 @@ public interface SocioService {
 
     void eliminar(Long id);
 
+    SocioResponseDTO bloquear(Long id, String observacion);
+
+    SocioResponseDTO desbloquear(Long id);
+
     List<PuestoResponseDTO> listarPuestosDeSocio(Long socioId);
 }

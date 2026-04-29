@@ -1,6 +1,8 @@
 package com.mercadopagos.entity;
 
+import com.mercadopagos.converter.TipoPuestoConverter;
 import com.mercadopagos.enums.EstadoPuesto;
+import com.mercadopagos.enums.TipoPuesto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +28,10 @@ public class Puesto {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private EstadoPuesto estado;
+
+    @Convert(converter = TipoPuestoConverter.class)
+    @Column(length = 20)
+    private TipoPuesto tipo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "socio_id")

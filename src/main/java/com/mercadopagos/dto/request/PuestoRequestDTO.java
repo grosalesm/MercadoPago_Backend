@@ -1,5 +1,6 @@
 package com.mercadopagos.dto.request;
 
+import com.mercadopagos.enums.TipoPuesto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -15,4 +16,6 @@ public class PuestoRequestDTO {
 
     @Size(max = 200)
     private String descripcion;
+
+    private TipoPuesto tipo;
 }

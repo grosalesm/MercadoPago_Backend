@@ -19,4 +19,6 @@ public interface PuestoRepository extends JpaRepository<Puesto, Long> {
     long countBySocioId(Long socioId);
 
     boolean existsByCodigo(String codigo);
+
+    boolean existsBySocioIdAndEstado(Long socioId, EstadoPuesto estado);
 }

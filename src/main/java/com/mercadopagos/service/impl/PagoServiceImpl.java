@@ -92,4 +92,10 @@ public class PagoServiceImpl implements PagoService {
 
         return pagosRealizados;
     }
+
+    @Override
+    public Double obtenerTotalPagadoHoy() {
+        LocalDate hoy = LocalDate.now();
+        return pagoRepository.sumMontoByFechaPago(hoy);
+    }
 }

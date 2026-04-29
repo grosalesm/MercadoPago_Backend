@@ -5,6 +5,7 @@ import com.mercadopagos.dto.response.PuestoResponseDTO;
 import com.mercadopagos.dto.response.SocioResponseDTO;
 import com.mercadopagos.entity.Puesto;
 import com.mercadopagos.entity.Socio;
+import com.mercadopagos.enums.EstadoPuesto;
 import com.mercadopagos.exception.ResourceNotFoundException;
 import com.mercadopagos.mapper.PuestoMapper;
 import com.mercadopagos.mapper.SocioMapper;
@@ -55,6 +56,9 @@ public class SocioServiceImpl implements SocioService {
         if (socioRepository.existsByDni(dto.getDni())) {
             throw new IllegalArgumentException("Ya existe un socio con el DNI: " + dto.getDni());
         }
+        if (dto.getEmail() != null && !dto.getEmail().isBlank() && socioRepository.existsByEmail(dto.getEmail())) {
+            throw new IllegalArgumentException("Ya existe un socio con el email: " + dto.getEmail());
+        }
 
         Socio socio = new Socio();
         socio.setNombres(dto.getNombres());
@@ -75,6 +79,9 @@ public class SocioServiceImpl implements SocioService {
         if (!socio.getDni().equals(dto.getDni()) && socioRepository.existsByDni(dto.getDni())) {
             throw new IllegalArgumentException("Ya existe un socio con el DNI: " + dto.getDni());
         }
+        if (dto.getEmail() != null && !dto.getEmail().isBlank() && socioRepository.existsByEmailAndIdNot(dto.getEmail(), id)) {
+            throw new IllegalArgumentException("Ya existe un socio con el email: " + dto.getEmail());
+        }
 
         socio.setNombres(dto.getNombres());
         socio.setApellidos(dto.getApellidos());
@@ -92,6 +99,40 @@ public class SocioServiceImpl implements SocioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Socio no encontrado con ID: " + id));
         socio.setActivo(false);
         socioRepository.save(socio);
+    }
+
+    @Override
+    public SocioResponseDTO bloquear(Long id, String observacion) {
+        Socio socio = socioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Socio no encontrado con ID: " + id));
+
+        if (!socio.getActivo()) {
+            throw new IllegalStateException("El socio ya se encuentra bloqueado.");
+        }
+
+        if (puestoRepository.existsBySocioIdAndEstado(id, EstadoPuesto.OCUPADO)) {
+            throw new IllegalStateException("No se puede bloquear un socio que tiene un puesto asignado. Libere el puesto primero.");
+        }
+
+        socio.setActivo(false);
+        socio.setObservacion(observacion != null ? observacion.trim() : null);
+        socio = socioRepository.save(socio);
+        return socioMapper.toDTO(socio);
+    }
+
+    @Override
+    public SocioResponseDTO desbloquear(Long id) {
+        Socio socio = socioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Socio no encontrado con ID: " + id));
+
+        if (socio.getActivo()) {
+            throw new IllegalStateException("El socio ya se encuentra activo.");
+        }
+
+        socio.setActivo(true);
+        socio.setObservacion(null);
+        socio = socioRepository.save(socio);
+        return socioMapper.toDTO(socio);
     }
 
     @Override

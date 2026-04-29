@@ -30,11 +30,14 @@ public class Socio {
     @Column(length = 20)
     private String telefono;
 
-    @Column(length = 150)
+    @Column(unique = true, length = 150)
     private String email;
 
     @Column(nullable = false)
     private Boolean activo;
+
+    @Column(length = 300)
+    private String observacion;
 
     @Column(nullable = false)
     private LocalDate fechaRegistro;

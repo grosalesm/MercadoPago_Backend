@@ -20,6 +20,7 @@ public class SocioMapper {
         dto.setTelefono(socio.getTelefono());
         dto.setEmail(socio.getEmail());
         dto.setActivo(socio.getActivo());
+        dto.setObservacion(socio.getObservacion());
         dto.setFechaRegistro(socio.getFechaRegistro());
         return dto;
     }

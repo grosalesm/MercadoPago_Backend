@@ -131,6 +131,16 @@ public class DeudaServiceImpl implements DeudaService {
     }
 
     @Override
+    public List<DeudaResponseDTO> listarSinPuesto() {
+        actualizarEstadosVencidos();
+        List<EstadoDeuda> estados = new ArrayList<>();
+        estados.add(EstadoDeuda.PENDIENTE);
+        estados.add(EstadoDeuda.VENCIDO);
+        List<Deuda> deudas = deudaRepository.findDeudasSinPuesto(estados);
+        return deudaMapper.toDTOList(deudas);
+    }
+
+    @Override
     public List<MorosidadDTO> reporteMorosidad() {
         actualizarEstadosVencidos();
 

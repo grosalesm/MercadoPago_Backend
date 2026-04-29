@@ -8,6 +8,6 @@ import java.util.List;
 public interface PagoService {
 
     PagoResponseDTO pagarDeudaIndividual(PagoRequestDTO dto);
-
     List<PagoResponseDTO> pagarTotalPuesto(Long puestoId);
+    Double obtenerTotalPagadoHoy();
 }

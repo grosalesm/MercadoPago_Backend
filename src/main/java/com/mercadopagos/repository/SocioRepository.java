@@ -12,4 +12,8 @@ public interface SocioRepository extends JpaRepository<Socio, Long> {
     Optional<Socio> findByDni(String dni);
 
     boolean existsByDni(String dni);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByEmailAndIdNot(String email, Long id);
 }

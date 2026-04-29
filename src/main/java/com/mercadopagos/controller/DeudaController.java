@@ -57,6 +57,12 @@ public class DeudaController {
         return ResponseEntity.ok(deudaService.listarPorPuesto(puestoId));
     }
 
+    // Deudas activas de socios que ya no tienen puesto asignado
+    @GetMapping("/sin-puesto")
+    public ResponseEntity<List<DeudaResponseDTO>> listarSinPuesto() {
+        return ResponseEntity.ok(deudaService.listarSinPuesto());
+    }
+
     // Reporte de morosidad: puestos con deudas vencidas sin pagar
     @GetMapping("/morosidad")
     public ResponseEntity<List<MorosidadDTO>> reporteMorosidad() {
