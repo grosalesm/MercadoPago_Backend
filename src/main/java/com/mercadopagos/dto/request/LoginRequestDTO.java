@@ -1,9 +1,3 @@
 package com.mercadopagos.dto.request;
 
-import lombok.Data;
-
-@Data
-public class LoginRequestDTO {
-    private String username;
-    private String password;
-}
+public record LoginRequestDTO(String username, String password) {}

@@ -12,6 +12,7 @@ import com.mercadopagos.repository.DeudaRepository;
 import com.mercadopagos.repository.PagoRepository;
 import com.mercadopagos.repository.PuestoRepository;
 import com.mercadopagos.service.PagoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class PagoServiceImpl implements PagoService {
 
     private final PagoRepository pagoRepository;
@@ -28,20 +30,10 @@ public class PagoServiceImpl implements PagoService {
     private final PuestoRepository puestoRepository;
     private final PagoMapper pagoMapper;
 
-    public PagoServiceImpl(PagoRepository pagoRepository,
-                           DeudaRepository deudaRepository,
-                           PuestoRepository puestoRepository,
-                           PagoMapper pagoMapper) {
-        this.pagoRepository = pagoRepository;
-        this.deudaRepository = deudaRepository;
-        this.puestoRepository = puestoRepository;
-        this.pagoMapper = pagoMapper;
-    }
-
     @Override
     public PagoResponseDTO pagarDeudaIndividual(PagoRequestDTO dto) {
-        Deuda deuda = deudaRepository.findById(dto.getDeudaId())
-                .orElseThrow(() -> new ResourceNotFoundException("Deuda no encontrada con ID: " + dto.getDeudaId()));
+        Deuda deuda = deudaRepository.findById(dto.deudaId())
+                .orElseThrow(() -> new ResourceNotFoundException("Deuda no encontrada con ID: " + dto.deudaId()));
 
         if (deuda.getEstado() == EstadoDeuda.PAGADO) {
             throw new IllegalStateException("La deuda ya ha sido pagada.");

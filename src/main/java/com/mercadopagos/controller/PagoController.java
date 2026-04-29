@@ -3,6 +3,7 @@ package com.mercadopagos.controller;
 import com.mercadopagos.dto.request.PagoRequestDTO;
 import com.mercadopagos.dto.response.PagoResponseDTO;
 import com.mercadopagos.service.PagoService;
+import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,13 +14,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/pagos")
+@RequiredArgsConstructor
 public class PagoController {
 
     private final PagoService pagoService;
-
-    public PagoController(PagoService pagoService) {
-        this.pagoService = pagoService;
-    }
 
     @PostMapping("/individual")
     public ResponseEntity<PagoResponseDTO> pagarDeudaIndividual(@Valid @RequestBody PagoRequestDTO dto) {

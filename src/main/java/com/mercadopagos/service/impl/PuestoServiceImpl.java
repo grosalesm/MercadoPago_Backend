@@ -12,6 +12,7 @@ import com.mercadopagos.mapper.PuestoMapper;
 import com.mercadopagos.repository.PuestoRepository;
 import com.mercadopagos.repository.SocioRepository;
 import com.mercadopagos.service.PuestoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,19 +20,12 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class PuestoServiceImpl implements PuestoService {
 
     private final PuestoRepository puestoRepository;
     private final SocioRepository socioRepository;
     private final PuestoMapper puestoMapper;
-
-    public PuestoServiceImpl(PuestoRepository puestoRepository,
-                             SocioRepository socioRepository,
-                             PuestoMapper puestoMapper) {
-        this.puestoRepository = puestoRepository;
-        this.socioRepository = socioRepository;
-        this.puestoMapper = puestoMapper;
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -50,14 +44,14 @@ public class PuestoServiceImpl implements PuestoService {
 
     @Override
     public PuestoResponseDTO crear(PuestoRequestDTO dto) {
-        if (puestoRepository.existsByCodigo(dto.getCodigo())) {
-            throw new IllegalArgumentException("Ya existe un puesto con el código: " + dto.getCodigo());
+        if (puestoRepository.existsByCodigo(dto.codigo())) {
+            throw new IllegalArgumentException("Ya existe un puesto con el código: " + dto.codigo());
         }
 
         Puesto puesto = new Puesto();
-        puesto.setCodigo(dto.getCodigo());
-        puesto.setDescripcion(dto.getDescripcion());
-        puesto.setTipo(dto.getTipo());
+        puesto.setCodigo(dto.codigo());
+        puesto.setDescripcion(dto.descripcion());
+        puesto.setTipo(dto.tipo());
 
         puesto = puestoRepository.save(puesto);
         return puestoMapper.toDTO(puesto);
@@ -68,13 +62,13 @@ public class PuestoServiceImpl implements PuestoService {
         Puesto puesto = puestoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Puesto no encontrado con ID: " + id));
 
-        if (!puesto.getCodigo().equals(dto.getCodigo()) && puestoRepository.existsByCodigo(dto.getCodigo())) {
-            throw new IllegalArgumentException("Ya existe un puesto con el código: " + dto.getCodigo());
+        if (!puesto.getCodigo().equals(dto.codigo()) && puestoRepository.existsByCodigo(dto.codigo())) {
+            throw new IllegalArgumentException("Ya existe un puesto con el código: " + dto.codigo());
         }
 
-        puesto.setCodigo(dto.getCodigo());
-        puesto.setDescripcion(dto.getDescripcion());
-        puesto.setTipo(dto.getTipo());
+        puesto.setCodigo(dto.codigo());
+        puesto.setDescripcion(dto.descripcion());
+        puesto.setTipo(dto.tipo());
 
         puesto = puestoRepository.save(puesto);
         return puestoMapper.toDTO(puesto);
@@ -140,12 +134,7 @@ public class PuestoServiceImpl implements PuestoService {
         long libres = puestoRepository.countByEstado(EstadoPuesto.LIBRE);
         long inhabilitados = puestoRepository.countByEstado(EstadoPuesto.INHABILITADO);
 
-        PuestoEstadisticasDTO dto = new PuestoEstadisticasDTO();
-        dto.setTotal(ocupados + libres + inhabilitados);
-        dto.setOcupados(ocupados);
-        dto.setLibres(libres);
-        dto.setInhabilitados(inhabilitados);
-        return dto;
+        return new PuestoEstadisticasDTO(ocupados + libres + inhabilitados, ocupados, libres, inhabilitados);
     }
 
     @Override
@@ -161,8 +150,8 @@ public class PuestoServiceImpl implements PuestoService {
             throw new IllegalStateException("No se puede asignar un socio a un puesto inhabilitado.");
         }
 
-        Socio socio = socioRepository.findById(dto.getSocioId())
-                .orElseThrow(() -> new ResourceNotFoundException("Socio no encontrado con ID: " + dto.getSocioId()));
+        Socio socio = socioRepository.findById(dto.socioId())
+                .orElseThrow(() -> new ResourceNotFoundException("Socio no encontrado con ID: " + dto.socioId()));
 
         if (!socio.getActivo()) {
             throw new IllegalStateException("No se puede asignar un puesto a un socio bloqueado.");

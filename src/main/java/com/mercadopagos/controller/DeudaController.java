@@ -6,6 +6,7 @@ import com.mercadopagos.dto.response.DeudaResponseDTO;
 import com.mercadopagos.dto.response.MorosidadDTO;
 import com.mercadopagos.dto.response.ResumenCobranzaDTO;
 import com.mercadopagos.service.DeudaService;
+import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +16,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/deudas")
+@RequiredArgsConstructor
 public class DeudaController {
 
     private final DeudaService deudaService;
-
-    public DeudaController(DeudaService deudaService) {
-        this.deudaService = deudaService;
-    }
 
     @PostMapping
     public ResponseEntity<DeudaResponseDTO> crearDeuda(@Valid @RequestBody DeudaRequestDTO dto) {

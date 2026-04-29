@@ -16,6 +16,7 @@ import com.mercadopagos.mapper.SocioMapper;
 import com.mercadopagos.repository.DeudaRepository;
 import com.mercadopagos.repository.PuestoRepository;
 import com.mercadopagos.service.DeudaService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,22 +31,13 @@ import java.util.Set;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class DeudaServiceImpl implements DeudaService {
 
     private final DeudaRepository deudaRepository;
     private final PuestoRepository puestoRepository;
     private final DeudaMapper deudaMapper;
     private final SocioMapper socioMapper;
-
-    public DeudaServiceImpl(DeudaRepository deudaRepository,
-                            PuestoRepository puestoRepository,
-                            DeudaMapper deudaMapper,
-                            SocioMapper socioMapper) {
-        this.deudaRepository = deudaRepository;
-        this.puestoRepository = puestoRepository;
-        this.deudaMapper = deudaMapper;
-        this.socioMapper = socioMapper;
-    }
 
     private void actualizarEstadosVencidos() {
         LocalDate hoy = LocalDate.now();
@@ -62,16 +54,16 @@ public class DeudaServiceImpl implements DeudaService {
     public DeudaResponseDTO crearDeuda(DeudaRequestDTO dto) {
         LocalDate hoy = LocalDate.now();
 
-        if (dto.getFechaEmision().isAfter(hoy)) {
+        if (dto.fechaEmision().isAfter(hoy)) {
             throw new IllegalArgumentException("La fecha de emisión no puede ser posterior a la fecha actual.");
         }
 
-        if (!dto.getFechaVencimiento().isAfter(dto.getFechaEmision())) {
+        if (!dto.fechaVencimiento().isAfter(dto.fechaEmision())) {
             throw new IllegalArgumentException("La fecha de vencimiento debe ser posterior a la fecha de emisión.");
         }
 
-        Puesto puesto = puestoRepository.findById(dto.getPuestoId())
-                .orElseThrow(() -> new ResourceNotFoundException("Puesto no encontrado con ID: " + dto.getPuestoId()));
+        Puesto puesto = puestoRepository.findById(dto.puestoId())
+                .orElseThrow(() -> new ResourceNotFoundException("Puesto no encontrado con ID: " + dto.puestoId()));
 
         if (puesto.getEstado() != EstadoPuesto.OCUPADO || puesto.getSocio() == null) {
             throw new IllegalStateException("El puesto debe estar ocupado para registrar una deuda.");
@@ -80,11 +72,11 @@ public class DeudaServiceImpl implements DeudaService {
         Deuda deuda = new Deuda();
         deuda.setPuesto(puesto);
         deuda.setSocio(puesto.getSocio());
-        deuda.setConcepto(dto.getConcepto());
-        deuda.setMonto(dto.getMonto());
-        deuda.setFechaEmision(dto.getFechaEmision());
-        deuda.setFechaVencimiento(dto.getFechaVencimiento());
-        deuda.setDescripcion(dto.getDescripcion());
+        deuda.setConcepto(dto.concepto());
+        deuda.setMonto(dto.monto());
+        deuda.setFechaEmision(dto.fechaEmision());
+        deuda.setFechaVencimiento(dto.fechaVencimiento());
+        deuda.setDescripcion(dto.descripcion());
 
         deuda = deudaRepository.save(deuda);
         return deudaMapper.toDTO(deuda);
@@ -93,7 +85,7 @@ public class DeudaServiceImpl implements DeudaService {
     @Override
     public List<DeudaResponseDTO> crearDeudasMultiple(DeudaMultipleRequestDTO dto) {
         List<DeudaResponseDTO> resultado = new ArrayList<>();
-        for (DeudaRequestDTO deudaDTO : dto.getDeudas()) {
+        for (DeudaRequestDTO deudaDTO : dto.deudas()) {
             resultado.add(crearDeuda(deudaDTO));
         }
         return resultado;
@@ -165,15 +157,14 @@ public class DeudaServiceImpl implements DeudaService {
                 totalMora = totalMora.add(deuda.getMonto());
             }
 
-            MorosidadDTO mora = new MorosidadDTO();
-            mora.setPuestoId(primera.getPuesto().getId());
-            mora.setCodigoPuesto(primera.getPuesto().getCodigo());
-            mora.setSocioId(primera.getSocio().getId());
-            mora.setSocioNombreCompleto(primera.getSocio().getNombres() + " " + primera.getSocio().getApellidos());
-            mora.setDeudasVencidas(deudaMapper.toDTOList(deudas));
-            mora.setTotalMora(totalMora);
-
-            resultado.add(mora);
+            resultado.add(new MorosidadDTO(
+                    primera.getPuesto().getId(),
+                    primera.getPuesto().getCodigo(),
+                    primera.getSocio().getId(),
+                    primera.getSocio().getNombres() + " " + primera.getSocio().getApellidos(),
+                    deudaMapper.toDTOList(deudas),
+                    totalMora
+            ));
         }
 
         return resultado;
@@ -200,13 +191,12 @@ public class DeudaServiceImpl implements DeudaService {
 
         List<Socio> deudoresSinPuesto = deudaRepository.findDeudoresSinPuesto(estadosActivos);
 
-        ResumenCobranzaDTO resumen = new ResumenCobranzaDTO();
-        resumen.setTotalPendienteGeneral(totalPendienteGeneral);
-        resumen.setTotalDeudasPendientes(totalDeudasPendientes);
-        resumen.setTotalPuestosConDeuda((long) puestosConDeuda.size());
-        resumen.setTotalDeudoresSinPuesto((long) deudoresSinPuesto.size());
-        resumen.setDeudoresSinPuesto(socioMapper.toDTOList(deudoresSinPuesto));
-
-        return resumen;
+        return new ResumenCobranzaDTO(
+                totalPendienteGeneral,
+                totalDeudasPendientes,
+                (long) puestosConDeuda.size(),
+                (long) deudoresSinPuesto.size(),
+                socioMapper.toDTOList(deudoresSinPuesto)
+        );
     }
 }

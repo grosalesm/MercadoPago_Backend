@@ -11,17 +11,17 @@ import java.util.List;
 public class PagoMapper {
 
     public PagoResponseDTO toDTO(Pago pago) {
-        PagoResponseDTO dto = new PagoResponseDTO();
-        dto.setId(pago.getId());
-        dto.setDeudaId(pago.getDeuda().getId());
-        dto.setConcepto(pago.getDeuda().getConcepto());
-        dto.setPuestoId(pago.getDeuda().getPuesto().getId());
-        dto.setCodigoPuesto(pago.getDeuda().getPuesto().getCodigo());
-        dto.setSocioId(pago.getDeuda().getSocio().getId());
-        dto.setSocioNombreCompleto(pago.getDeuda().getSocio().getNombres() + " " + pago.getDeuda().getSocio().getApellidos());
-        dto.setMonto(pago.getMonto());
-        dto.setFechaPago(pago.getFechaPago());
-        return dto;
+        return new PagoResponseDTO(
+                pago.getId(),
+                pago.getDeuda().getId(),
+                pago.getDeuda().getConcepto(),
+                pago.getDeuda().getPuesto().getId(),
+                pago.getDeuda().getPuesto().getCodigo(),
+                pago.getDeuda().getSocio().getId(),
+                pago.getDeuda().getSocio().getNombres() + " " + pago.getDeuda().getSocio().getApellidos(),
+                pago.getMonto(),
+                pago.getFechaPago()
+        );
     }
 
     public List<PagoResponseDTO> toDTOList(List<Pago> pagos) {

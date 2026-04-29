@@ -5,6 +5,7 @@ import com.mercadopagos.dto.request.PuestoRequestDTO;
 import com.mercadopagos.dto.response.PuestoEstadisticasDTO;
 import com.mercadopagos.dto.response.PuestoResponseDTO;
 import com.mercadopagos.service.PuestoService;
+import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +15,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/puestos")
+@RequiredArgsConstructor
 public class PuestoController {
 
     private final PuestoService puestoService;
-
-    public PuestoController(PuestoService puestoService) {
-        this.puestoService = puestoService;
-    }
 
     @GetMapping
     public ResponseEntity<List<PuestoResponseDTO>> listarTodos() {

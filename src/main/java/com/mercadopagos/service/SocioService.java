@@ -15,9 +15,7 @@ public interface SocioService {
     SocioResponseDTO crear(SocioRequestDTO dto);
 
     SocioResponseDTO actualizar(Long id, SocioRequestDTO dto);
-
-    void eliminar(Long id);
-
+    
     SocioResponseDTO bloquear(Long id, String observacion);
 
     SocioResponseDTO desbloquear(Long id);

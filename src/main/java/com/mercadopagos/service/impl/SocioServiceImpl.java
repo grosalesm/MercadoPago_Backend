@@ -12,6 +12,7 @@ import com.mercadopagos.mapper.SocioMapper;
 import com.mercadopagos.repository.PuestoRepository;
 import com.mercadopagos.repository.SocioRepository;
 import com.mercadopagos.service.SocioService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,22 +20,13 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class SocioServiceImpl implements SocioService {
 
     private final SocioRepository socioRepository;
     private final PuestoRepository puestoRepository;
     private final SocioMapper socioMapper;
     private final PuestoMapper puestoMapper;
-
-    public SocioServiceImpl(SocioRepository socioRepository,
-                            PuestoRepository puestoRepository,
-                            SocioMapper socioMapper,
-                            PuestoMapper puestoMapper) {
-        this.socioRepository = socioRepository;
-        this.puestoRepository = puestoRepository;
-        this.socioMapper = socioMapper;
-        this.puestoMapper = puestoMapper;
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -53,19 +45,19 @@ public class SocioServiceImpl implements SocioService {
 
     @Override
     public SocioResponseDTO crear(SocioRequestDTO dto) {
-        if (socioRepository.existsByDni(dto.getDni())) {
-            throw new IllegalArgumentException("Ya existe un socio con el DNI: " + dto.getDni());
+        if (socioRepository.existsByDni(dto.dni())) {
+            throw new IllegalArgumentException("Ya existe un socio con el DNI: " + dto.dni());
         }
-        if (dto.getEmail() != null && !dto.getEmail().isBlank() && socioRepository.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("Ya existe un socio con el email: " + dto.getEmail());
+        if (dto.email() != null && !dto.email().isBlank() && socioRepository.existsByEmail(dto.email())) {
+            throw new IllegalArgumentException("Ya existe un socio con el email: " + dto.email());
         }
 
         Socio socio = new Socio();
-        socio.setNombres(dto.getNombres());
-        socio.setApellidos(dto.getApellidos());
-        socio.setDni(dto.getDni());
-        socio.setTelefono(dto.getTelefono());
-        socio.setEmail(dto.getEmail());
+        socio.setNombres(dto.nombres());
+        socio.setApellidos(dto.apellidos());
+        socio.setDni(dto.dni());
+        socio.setTelefono(dto.telefono());
+        socio.setEmail(dto.email());
 
         socio = socioRepository.save(socio);
         return socioMapper.toDTO(socio);
@@ -76,29 +68,21 @@ public class SocioServiceImpl implements SocioService {
         Socio socio = socioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Socio no encontrado con ID: " + id));
 
-        if (!socio.getDni().equals(dto.getDni()) && socioRepository.existsByDni(dto.getDni())) {
-            throw new IllegalArgumentException("Ya existe un socio con el DNI: " + dto.getDni());
+        if (!socio.getDni().equals(dto.dni()) && socioRepository.existsByDni(dto.dni())) {
+            throw new IllegalArgumentException("Ya existe un socio con el DNI: " + dto.dni());
         }
-        if (dto.getEmail() != null && !dto.getEmail().isBlank() && socioRepository.existsByEmailAndIdNot(dto.getEmail(), id)) {
-            throw new IllegalArgumentException("Ya existe un socio con el email: " + dto.getEmail());
+        if (dto.email() != null && !dto.email().isBlank() && socioRepository.existsByEmailAndIdNot(dto.email(), id)) {
+            throw new IllegalArgumentException("Ya existe un socio con el email: " + dto.email());
         }
 
-        socio.setNombres(dto.getNombres());
-        socio.setApellidos(dto.getApellidos());
-        socio.setDni(dto.getDni());
-        socio.setTelefono(dto.getTelefono());
-        socio.setEmail(dto.getEmail());
+        socio.setNombres(dto.nombres());
+        socio.setApellidos(dto.apellidos());
+        socio.setDni(dto.dni());
+        socio.setTelefono(dto.telefono());
+        socio.setEmail(dto.email());
 
         socio = socioRepository.save(socio);
         return socioMapper.toDTO(socio);
-    }
-
-    @Override
-    public void eliminar(Long id) {
-        Socio socio = socioRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Socio no encontrado con ID: " + id));
-        socio.setActivo(false);
-        socioRepository.save(socio);
     }
 
     @Override

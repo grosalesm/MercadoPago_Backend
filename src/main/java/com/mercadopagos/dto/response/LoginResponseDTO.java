@@ -1,11 +1,3 @@
 package com.mercadopagos.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-@Data
-@AllArgsConstructor
-public class LoginResponseDTO {
-    private String token;
-    private String username;
-}
+public record LoginResponseDTO(String token, String username) {}

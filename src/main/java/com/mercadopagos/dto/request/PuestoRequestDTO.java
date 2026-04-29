@@ -3,19 +3,9 @@ package com.mercadopagos.dto.request;
 import com.mercadopagos.enums.TipoPuesto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
-public class PuestoRequestDTO {
-
-    @NotBlank(message = "El código del puesto es obligatorio")
-    @Size(max = 20)
-    private String codigo;
-
-    @Size(max = 200)
-    private String descripcion;
-
-    private TipoPuesto tipo;
-}
+public record PuestoRequestDTO(
+        @NotBlank(message = "El código del puesto es obligatorio") @Size(max = 20) String codigo,
+        @Size(max = 200) String descripcion,
+        TipoPuesto tipo
+) {}

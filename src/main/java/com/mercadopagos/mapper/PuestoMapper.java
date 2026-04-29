@@ -11,20 +11,16 @@ import java.util.List;
 public class PuestoMapper {
 
     public PuestoResponseDTO toDTO(Puesto puesto) {
-        PuestoResponseDTO dto = new PuestoResponseDTO();
-        dto.setId(puesto.getId());
-        dto.setCodigo(puesto.getCodigo());
-        dto.setDescripcion(puesto.getDescripcion());
-        dto.setEstado(puesto.getEstado());
-        dto.setTipo(puesto.getTipo());
-
-        if (puesto.getSocio() != null) {
-            dto.setSocioId(puesto.getSocio().getId());
-            dto.setSocioNombreCompleto(puesto.getSocio().getNombres() + " " + puesto.getSocio().getApellidos());
-            dto.setSocioDni(puesto.getSocio().getDni());
-        }
-
-        return dto;
+        return new PuestoResponseDTO(
+                puesto.getId(),
+                puesto.getCodigo(),
+                puesto.getDescripcion(),
+                puesto.getEstado(),
+                puesto.getTipo(),
+                puesto.getSocio() != null ? puesto.getSocio().getId() : null,
+                puesto.getSocio() != null ? puesto.getSocio().getNombres() + " " + puesto.getSocio().getApellidos() : null,
+                puesto.getSocio() != null ? puesto.getSocio().getDni() : null
+        );
     }
 
     public List<PuestoResponseDTO> toDTOList(List<Puesto> puestos) {
